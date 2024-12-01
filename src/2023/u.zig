@@ -25,6 +25,22 @@ pub fn trimSplit2(s_: []const u8, d: u8) !struct{[]const u8, []const u8} {
     return .{ list.items[0], list.items[1] };
 }
 
+pub fn tokenize(s_: []const u8, d: u8) ![][]const u8 {
+    var s = s_;
+    var list = std.ArrayList([]const u8).init(gpa);
+    defer list.deinit();
+    var i: usize = 0;
+    var start: usize = 0;
+    while (i < s.len) : (i += 1) {
+        if (s[i] == d) {
+            try list.append(s[start..i]);
+            start = i + 1;
+        }
+    }
+    try list.append(s[start..]);
+    return list.toOwnedSlice();
+}
+
 pub fn trimSplit(s_: []const u8, d: u8) ![][]const u8 {
     var s = s_;
     while (s.len > 0 and s[0] == d) s = s[1..];
