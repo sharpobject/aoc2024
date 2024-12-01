@@ -1,12 +1,12 @@
 const std = @import("std");
 const mem = std.mem;
-const u = @import("u.zig");
+pub const u = @import("u.zig");
 
-i: []const u8,
-a: mem.Allocator,
+pub var input: []const u8 = undefined;
+pub var gpa: mem.Allocator = undefined;
 
-pub fn part1(this: *const @This()) !?i64 {
-    const lines = try u.trimSplit(this.i, '\n', this.a);
+pub fn part1() !?i64 {
+    const lines = try u.trimSplit(input, '\n');
     var sum: i64 = 0;
     for (lines) |line| {
         var first_number: i64 = -1;
@@ -24,8 +24,8 @@ pub fn part1(this: *const @This()) !?i64 {
 
 const digits: [9][]const u8 = .{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
 
-pub fn part2(this: *const @This()) !?i64 {
-    const lines = try u.trimSplit(this.i, '\n', this.a);
+pub fn part2() !?i64 {
+    const lines = try u.trimSplit(input, '\n');
     var sum: i64 = 0;
     for (lines) |line| {
         var first_number: i64 = -1;
@@ -49,17 +49,4 @@ pub fn part2(this: *const @This()) !?i64 {
         sum += first_number * 10 + last_number;
     }
     return sum;
-}
-
-test "it should do nothing" {
-    const allocator = std.testing.allocator;
-    const input = "";
-
-    const problem: @This() = .{
-        .i = input,
-        .a = allocator,
-    };
-
-    try std.testing.expectEqual(null, try problem.part1());
-    try std.testing.expectEqual(null, try problem.part2());
 }

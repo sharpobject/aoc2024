@@ -2,7 +2,7 @@ const std = @import("std");
 
 pub var gpa: std.mem.Allocator = undefined;
 
-pub fn trimSplit2(s_: []const u8, d: u8) ![][]const u8 {
+pub fn trimSplit2(s_: []const u8, d: u8) !struct{[]const u8, []const u8} {
     var s = s_;
     while (s.len > 0 and s[0] == d) s = s[1..];
     while (s.len > 0 and s[s.len - 1] == d) s = s[0..s.len - 1];
@@ -22,7 +22,7 @@ pub fn trimSplit2(s_: []const u8, d: u8) ![][]const u8 {
         start = s.len - 1;
         try list.append(s[start..]);
     }
-    return list.toOwnedSlice();
+    return .{ list.items[0], list.items[1] };
 }
 
 pub fn trimSplit(s_: []const u8, d: u8) ![][]const u8 {
@@ -35,11 +35,15 @@ pub fn trimSplit(s_: []const u8, d: u8) ![][]const u8 {
     var start: usize = 0;
     while (i < s.len) : (i += 1) {
         if (s[i] == d) {
-            try list.append(s[start..i]);
+            if (start < i) {
+                try list.append(s[start..i]);
+            }
             start = i + 1;
         }
     }
-    try list.append(s[start..]);
+    if (start < s.len) {
+        try list.append(s[start..]);
+    }
     return list.toOwnedSlice();
 }
 
@@ -187,11 +191,24 @@ pub fn map(xs: anytype, f: anytype) !getSliceType(@TypeOf(xs), @TypeOf(f)) {
     }
 }
 
+pub fn widenThenBitCast(comptime T: type, x: anytype) T {
+    const U = @TypeOf(x);
+    const u_info = @typeInfo(U);
+    const t_info = @typeInfo(T);
+    if (u_info.int.bits == t_info.int.bits) {
+        return @bitCast(x);
+    } else {
+        return @bitCast(@as(std.meta.Int(.signed, u_info.int.bits), x));
+    }
+}
+
 pub fn adj(xs: anytype, i: usize, j: usize, comptime dxs: anytype, comptime dys: anytype) [@sizeOf(@TypeOf(dxs))/@sizeOf(@TypeOf(dxs[0]))]@TypeOf(xs[0][0]) {
     var ret: [@sizeOf(@TypeOf(dxs))/@sizeOf(@TypeOf(dxs[0]))]@TypeOf(xs[0][0]) = undefined;
     for (0..dxs.len) |k| {
-        const x: usize = @intCast(@as(i64, @intCast(i)) + dxs[k]);
-        const y: usize = @intCast(@as(i64, @intCast(j)) + dys[k]);
+        const dx: usize = widenThenBitCast(usize, dxs[k]);
+        const dy: usize = widenThenBitCast(usize, dys[k]);
+        const x: usize = i +% dx;
+        const y: usize = j +% dy;
         ret[k] = xs[x][y];
     }
     return ret;

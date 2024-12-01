@@ -10,21 +10,19 @@ pub fn part1() !?i128 {
     var sum: i64 = 0;
     u.use(&sum, &lines);
     lines = try u.pad(lines, '.', 10);
-    const dxs: [4]i64 = .{ 1, 0, -1, 0 };
-    const dys: [4]i64 = .{ 0, 1, 0, -1 };
+    const dxs: [8]u64 = @bitCast([8]i64{ 1, 1, 1,  0, -1, -1, -1,  0 });
+    const dys: [8]u64 = @bitCast([8]i64{-1, 0, 1,  1,  1,  0, -1, -1 });
     for (lines, 0..) |line, i| {
         var num: i64 = 0;
         var adj: bool = false;
         for (line, 0..) |c, j| {
             if (c >= '0' and c <= '9') {
                 num = 10 * num + (c - '0');
-                for (dxs) |dx| {
-                    for (dys) |dy| {
-                        const x: usize = @intCast(@as(i64, @intCast(i)) + dx);
-                        const y: usize = @intCast(@as(i64, @intCast(j)) + dy);
-                        if ((lines[x][y] < '0' or lines[x][y] > '9') and lines[x][y] != '.') {
-                            adj = true;
-                        }
+                for (0..dxs.len) |k| {
+                    const x = i +% dxs[k];
+                    const y = j +% dys[k];
+                    if ((lines[x][y] < '0' or lines[x][y] > '9') and lines[x][y] != '.') {
+                        adj = true;
                     }
                 }
             } else {
@@ -51,8 +49,8 @@ pub fn part2() !?i128 {
     u.use(&sum, &lines);
     lines = try u.pad(lines, '.', 10);
     const xd = try u.map(lines, Xd.init);
-    const dxs: [8]i64 = .{ 1, 1,  1,  0, -1, -1, -1, 0 };
-    const dys: [8]i64 = .{ 1, 0, -1, -1, -1,  0,  1, 1 };
+    const dxs: [8]u64 = @bitCast([8]i64{ 1, 1, 1,  0, -1, -1, -1,  0 });
+    const dys: [8]u64 = @bitCast([8]i64{-1, 0, 1,  1,  1,  0, -1, -1 });
     var label: u64 = 1;
     var label_to_value: std.AutoArrayHashMap(u64, i64) = .init(gpa);
     var num: i64 = 0;

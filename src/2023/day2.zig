@@ -1,9 +1,9 @@
 const std = @import("std");
 const mem = std.mem;
-const u = @import("u.zig");
+pub const u = @import("u.zig");
 
-i: []const u8,
-a: mem.Allocator,
+pub var input: []const u8 = undefined;
+pub var gpa: mem.Allocator = undefined;
 
 const Color = enum(u8) {
     red,
@@ -11,22 +11,19 @@ const Color = enum(u8) {
     blue,
 };
 
-pub fn part1(this: *const @This()) !?i64 {
-    u.a = this.a;
-    const lines = try u.trimSplit(this.i, '\n');
+pub fn part1() !?i64 {
+    const lines = try u.trimSplit(input, '\n');
     var sum: i64 = 0;
     for (lines) |line| {
-        const xd = try u.trimSplit(line, ':');
-        const header_str = xd[0];
-        const games_str = xd[1];
+        const header_str, const games_str = try u.trimSplit2(line, ':');
         const games = try u.trimSplit(games_str, ';');
         var possible: bool = true;
         for (games) |game| {
             const reveals = try u.trimSplit(game, ',');
             for (reveals) |reveal_str| {
-                const reveal = try u.trimSplit(reveal_str, ' ');
-                const color = std.meta.stringToEnum(Color, reveal[1]) orelse return error.InvalidColor;
-                const count = try std.fmt.parseInt(u8, reveal[0], 10);
+                const count_str, const color_str = try u.trimSplit2(reveal_str, ' ');
+                const color = std.meta.stringToEnum(Color, color_str) orelse return error.InvalidColor;
+                const count = try std.fmt.parseInt(u8, count_str, 10);
                 if (color == .red and count > 12) possible = false;
                 if (color == .green and count > 13) possible = false;
                 if (color == .blue and count > 14) possible = false;
@@ -40,9 +37,8 @@ pub fn part1(this: *const @This()) !?i64 {
     return sum;
 }
 
-pub fn part2(this: *const @This()) !?i64 {
-    u.a = this.a;
-    const lines = try u.trimSplit(this.i, '\n');
+pub fn part2() !?i64 {
+    const lines = try u.trimSplit(input, '\n');
     var sum: i64 = 0;
     for (lines) |line| {
         const xd = try u.trimSplit(line, ':');
@@ -66,17 +62,4 @@ pub fn part2(this: *const @This()) !?i64 {
         sum += red * green * blue;
     }
     return sum;
-}
-
-test "it should do nothing" {
-    const allocator = std.testing.allocator;
-    const input = "";
-
-    const problem: @This() = .{
-        .i = input,
-        .a = allocator,
-    };
-
-    try std.testing.expectEqual(null, try problem.part1());
-    try std.testing.expectEqual(null, try problem.part2());
 }
