@@ -330,7 +330,7 @@ fn generateSourceFileIfNotPresent(allocator: Allocator) !void {
             \\    u.a = this.a;
             \\    const lines = try u.trimSplit(this.i, '\n');
             \\    var sum: i64 = 0;
-            \\    u.use(sum, lines);
+            \\    u.use(&sum, lines);
             \\
             \\
             \\    return sum;
@@ -340,7 +340,7 @@ fn generateSourceFileIfNotPresent(allocator: Allocator) !void {
             \\    u.a = this.a;
             \\    const lines = try u.trimSplit(this.i, '\n');
             \\    var sum: i64 = 0;
-            \\    u.use(sum, lines);
+            \\    u.use(&sum, lines);
             \\
             \\
             \\    return sum;

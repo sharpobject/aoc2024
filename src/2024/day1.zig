@@ -8,7 +8,7 @@ pub var gpa: mem.Allocator = undefined;
 pub fn part1() !?i128 {
     const lines = try u.trimSplit(input, '\n');
     var sum: i64 = 0;
-    u.use(sum, lines);
+    u.use(&sum, lines);
     var as = try gpa.alloc(i64, lines.len);
     var bs = try gpa.alloc(i64, lines.len);
     for (lines, 0..) |line, i| {
@@ -29,7 +29,7 @@ pub fn part1() !?i128 {
 pub fn part2() !?i128 {
     const lines = try u.trimSplit(input, '\n');
     var sum: i64 = 0;
-    u.use(sum, lines);
+    u.use(&sum, lines);
     var as = try gpa.alloc(i64, lines.len);
     var bs = try gpa.alloc(i64, lines.len);
     for (lines, 0..) |line, i| {
