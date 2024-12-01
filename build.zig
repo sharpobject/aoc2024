@@ -327,18 +327,18 @@ fn generateSourceFileIfNotPresent(allocator: Allocator) !void {
             \\pub var gpa: mem.Allocator = undefined;
             \\
             \\pub fn part1() !?i128 {
-            \\    const lines = try u.trimSplit(input, '\n');
+            \\    var lines = try u.trimSplit(input, '\n');
             \\    var sum: i64 = 0;
-            \\    u.use(&sum, lines);
+            \\    u.use(&sum, &lines);
             \\
             \\
             \\    return sum;
             \\}
             \\
             \\pub fn part2() !?i128 {
-            \\    const lines = try u.trimSplit(input, '\n');
+            \\    var lines = try u.trimSplit(input, '\n');
             \\    var sum: i64 = 0;
-            \\    u.use(&sum, lines);
+            \\    u.use(&sum, &lines);
             \\
             \\
             \\    return sum;

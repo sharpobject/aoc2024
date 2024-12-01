@@ -19,7 +19,7 @@ pub fn part1() !?i128 {
     u.sort(as);
     u.sort(bs);
     for (as, 0..) |a, i| {
-        sum += @intCast(@abs(a - bs[i])); 
+        sum += @intCast(@abs(a - bs[i]));
     }
 
 
