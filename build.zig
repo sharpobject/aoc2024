@@ -106,6 +106,44 @@ pub fn build(b: *Build) !void {
             ),
         },
     );
+    exe.root_module.addAnonymousImport(
+        "input_small",
+        .{
+            .root_source_file = b.path(
+                try fs.path.join(
+                    b.allocator,
+                    &[_][]const u8{
+                        INPUT_DIR,
+                        YEAR,
+                        try fmt.allocPrint(
+                            b.allocator,
+                            "day{s}_small.txt",
+                            .{DAY},
+                        ),
+                    },
+                ),
+            ),
+        },
+    );
+    exe.root_module.addAnonymousImport(
+        "input_small2",
+        .{
+            .root_source_file = b.path(
+                try fs.path.join(
+                    b.allocator,
+                    &[_][]const u8{
+                        INPUT_DIR,
+                        YEAR,
+                        try fmt.allocPrint(
+                            b.allocator,
+                            "day{s}_small2.txt",
+                            .{DAY},
+                        ),
+                    },
+                ),
+            ),
+        },
+    );
 
     // Setup Step:
     // - File -> ./input/{year}/{day}.txt. If not exist on disk, fetch from AoC API, save to disk, and then read.
@@ -283,32 +321,31 @@ fn generateSourceFileIfNotPresent(allocator: Allocator) !void {
         const template =
             \\const std = @import("std");
             \\const mem = std.mem;
+            \\pub const u = @import("u.zig");
             \\
-            \\input: []const u8,
-            \\allocator: mem.Allocator,
+            \\pub var input: []const u8 = undefined;
+            \\pub var gpa: mem.Allocator,
             \\
-            \\pub fn part1(this: *const @This()) !?i64 {
-            \\    _ = this;
-            \\    return null;
+            \\pub fn part1() !?i128 {
+            \\    u.a = this.a;
+            \\    const lines = try u.trimSplit(this.i, '\n');
+            \\    var sum: i64 = 0;
+            \\    u.use(sum, lines);
+            \\
+            \\
+            \\    return sum;
             \\}
             \\
-            \\pub fn part2(this: *const @This()) !?i64 {
-            \\    _ = this;
-            \\    return null;
+            \\pub fn part2() !?i128 {
+            \\    u.a = this.a;
+            \\    const lines = try u.trimSplit(this.i, '\n');
+            \\    var sum: i64 = 0;
+            \\    u.use(sum, lines);
+            \\
+            \\
+            \\    return sum;
             \\}
             \\
-            \\test "it should do nothing" {
-            \\    const allocator = std.testing.allocator;
-            \\    const input = "";
-            \\
-            \\    const problem: @This() = .{
-            \\        .input = input,
-            \\        .allocator = allocator,
-            \\    };
-            \\
-            \\    try std.testing.expectEqual(null, try problem.part1());
-            \\    try std.testing.expectEqual(null, try problem.part2());
-            \\}
         ;
         const dir = try fs.cwd().makeOpenPath(
             fs.path.dirname(src_path).?,
