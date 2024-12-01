@@ -324,11 +324,10 @@ fn generateSourceFileIfNotPresent(allocator: Allocator) !void {
             \\pub const u = @import("u.zig");
             \\
             \\pub var input: []const u8 = undefined;
-            \\pub var gpa: mem.Allocator,
+            \\pub var gpa: mem.Allocator = undefined;
             \\
             \\pub fn part1() !?i128 {
-            \\    u.a = this.a;
-            \\    const lines = try u.trimSplit(this.i, '\n');
+            \\    const lines = try u.trimSplit(input, '\n');
             \\    var sum: i64 = 0;
             \\    u.use(&sum, lines);
             \\
@@ -337,8 +336,7 @@ fn generateSourceFileIfNotPresent(allocator: Allocator) !void {
             \\}
             \\
             \\pub fn part2() !?i128 {
-            \\    u.a = this.a;
-            \\    const lines = try u.trimSplit(this.i, '\n');
+            \\    const lines = try u.trimSplit(input, '\n');
             \\    var sum: i64 = 0;
             \\    u.use(&sum, lines);
             \\
