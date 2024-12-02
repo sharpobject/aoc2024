@@ -327,7 +327,7 @@ fn generateSourceFileIfNotPresent(allocator: Allocator) !void {
             \\pub var gpa: mem.Allocator = undefined;
             \\
             \\pub fn part1() !?i128 {
-            \\    var lines = try u.trimSplit(input, '\n');
+            \\    var lines = u.trimSplit(input, '\n');
             \\    var sum: i64 = 0;
             \\    u.use(&sum, &lines);
             \\
@@ -336,7 +336,7 @@ fn generateSourceFileIfNotPresent(allocator: Allocator) !void {
             \\}
             \\
             \\pub fn part2() !?i128 {
-            \\    var lines = try u.trimSplit(input, '\n');
+            \\    var lines = u.trimSplit(input, '\n');
             \\    var sum: i64 = 0;
             \\    u.use(&sum, &lines);
             \\

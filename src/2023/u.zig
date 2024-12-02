@@ -6,6 +6,15 @@ pub fn alloc(comptime T: type, n: usize) []T {
     return gpa.alloc(T, n) catch @panic("out of memory");
 }
 
+pub fn gcd(a: anytype, b: @TypeOf(a)) @TypeOf(a) {
+    if (b == 0) return a;
+    return gcd(b, @mod(a, b));
+}
+
+pub fn lcm(a: anytype, b: @TypeOf(a)) @TypeOf(a) {
+    return @divExact((a * b), gcd(a, b));
+}
+
 pub fn swap(a: anytype, b: anytype) void {
     const tmp = b.*;
     b.* = a.*;
@@ -337,6 +346,30 @@ pub fn reduce(xs: anytype, f: anytype, initial: anytype) @typeInfo(@TypeOf(f)).@
     }
 }
 
+pub fn filterOut(xs: anytype, ys: anytype) @TypeOf(xs) {
+    const Elem = getElemType(@TypeOf(xs));
+    if (@TypeOf(ys) == Elem) {
+        return filterOut(xs, [_]Elem{ys});
+    }
+    const ret = gpa.alloc(Elem, xs.len) catch @panic("OOM");
+    var i: usize = 0;
+    for (xs) |x| {
+        if (std.mem.indexOf(Elem, ys, &[_]Elem{x}) == null) {
+            ret[i] = x;
+            i += 1;
+        }
+    }
+    return ret[0..i];
+}
+
+pub fn histogram(xs: anytype) [256]usize {
+    var ret: [256]usize = [_]usize{0} ** 256;
+    for (xs) |x| {
+        ret[x] += 1;
+    }
+    return ret;
+}
+
 pub fn min(xs: anytype) getElemType(@TypeOf(xs)) {
     const T = getElemType(@TypeOf(xs));
     return reduce(xs, struct{pub fn min(a: T, b: T) T { return @min(a,b); }}.min, std.math.maxInt(T));
@@ -363,8 +396,18 @@ pub fn trimSplitParse2(s: []const u8, delim: u8) struct{i64, i64} {
     return .{ ret[0], ret[1] };
 }
 
+pub fn trimSplitParse2Base(s: []const u8, delim: u8, base: u8) struct{i64, i64} {
+    const ret = trimSplitParseBase(s, delim, base);
+    return .{ ret[0], ret[1] };
+}
+
 pub fn trimSplitParse3(s: []const u8, delim: u8) struct{i64, i64, i64} {
     const ret = trimSplitParse(s, delim);
+    return .{ ret[0], ret[1], ret[2] };
+}
+
+pub fn trimSplitParse3Base(s: []const u8, delim: u8, base: u8) struct{i64, i64, i64} {
+    const ret = trimSplitParseBase(s, delim, base);
     return .{ ret[0], ret[1], ret[2] };
 }
 
@@ -373,8 +416,18 @@ pub fn trimSplitParse4(s: []const u8, delim: u8) struct{i64, i64, i64, i64} {
     return .{ ret[0], ret[1], ret[2], ret[3] };
 }
 
+pub fn trimSplitParse4Base(s: []const u8, delim: u8, base: u8) struct{i64, i64, i64, i64} {
+    const ret = trimSplitParseBase(s, delim, base);
+    return .{ ret[0], ret[1], ret[2], ret[3] };
+}
+
 pub fn trimSplitParse5(s: []const u8, delim: u8) struct{i64, i64, i64, i64, i64} {
     const ret = trimSplitParse(s, delim);
+    return .{ ret[0], ret[1], ret[2], ret[3], ret[4] };
+}
+
+pub fn trimSplitParse5Base(s: []const u8, delim: u8, base: u8) struct{i64, i64, i64, i64, i64} {
+    const ret = trimSplitParseBase(s, delim, base);
     return .{ ret[0], ret[1], ret[2], ret[3], ret[4] };
 }
 
@@ -417,4 +470,43 @@ pub fn adj(xs: anytype, i: usize, j: usize, comptime dxs: anytype, comptime dys:
 pub fn use(aa: anytype, b: anytype) void {
     _ = aa;
     _ = b;
+}
+
+pub fn Queue(T: type) type {
+    return struct {
+        items: []T = &([_]T{}),
+        lo: usize = 0,
+        len: usize = 0,
+        const Self = @This();
+        fn resize(self: *Self) void {
+            const old_items = self.items;
+            var new_len = old_items.len * 2;
+            if (new_len == 0) new_len = 1024;
+            const new_items = gpa.alloc(T, new_len) catch @panic("alloc failed");
+            const first_segment_hi = @min(self.lo + self.len, old_items.len);
+            const first_segment_len = first_segment_hi - self.lo;
+            @memcpy(new_items, old_items[self.lo..first_segment_hi]);
+            if (first_segment_len < self.len) {
+                @memcpy(new_items[first_segment_len..], old_items[0..self.len - first_segment_len]);
+            }
+            self.lo = 0;
+            self.items = new_items;
+        }
+        pub fn push(self: *Self, x: T) void {
+            if (self.len == self.items.len) {
+                self.resize();
+            }
+            self.items[self.len] = x;
+            self.len += 1;
+        }
+        pub fn pop(self: *Self) T {
+            if (self.len == 0) @panic("pop: empty");
+            self.len -= 1;
+            return self.items[self.len];
+        }
+        pub fn peek(self: *Self) T {
+            if (self.len == 0) @panic("peek: empty");
+            return self.items[self.len - 1];
+        }
+    };
 }
