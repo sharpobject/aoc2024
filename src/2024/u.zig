@@ -25,7 +25,7 @@ pub fn trimSplit2(s_: []const u8, d: u8) !struct{[]const u8, []const u8} {
     return .{ list.items[0], list.items[1] };
 }
 
-pub fn tokenize(s_: []const u8, d: u8) ![][]const u8 {
+pub fn split(s_: []const u8, d: u8) ![][]const u8 {
     var s = s_;
     var list = std.ArrayList([]const u8).init(gpa);
     defer list.deinit();
@@ -179,9 +179,18 @@ pub fn pad(xs: anytype, sentinel: anytype, n: usize) !@TypeOf(xs) {
 pub fn getSliceType(T: type, F: type) type {
     const info = @typeInfo(F);
     const Return = info.@"fn".return_type.?;
-    const bottom = comptime (ptrDepth(T) == ptrDepth(Return));
+    const Param1 = info.@"fn".params[0].type.?;
+    const bottom = comptime (ptrDepth(T) == ptrDepth(Param1));
     if (bottom) {
-        return Return;
+        const return_info = @typeInfo(Return);
+        switch (return_info) {
+            .error_union => {
+                return return_info.error_union.payload;
+            },
+            else => {
+                return Return;
+            },
+        }
     } else {
         const C = std.meta.Child(T);
         return []getSliceType(C, F);

@@ -25,7 +25,7 @@ pub fn trimSplit2(s_: []const u8, d: u8) !struct{[]const u8, []const u8} {
     return .{ list.items[0], list.items[1] };
 }
 
-pub fn tokenize(s_: []const u8, d: u8) ![][]const u8 {
+pub fn split(s_: []const u8, d: u8) ![][]const u8 {
     var s = s_;
     var list = std.ArrayList([]const u8).init(gpa);
     defer list.deinit();
