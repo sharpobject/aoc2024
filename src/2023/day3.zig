@@ -6,10 +6,10 @@ pub var input: []const u8 = undefined;
 pub var gpa: mem.Allocator = undefined;
 
 pub fn part1() !?i128 {
-    var lines = try u.trimSplit(input, '\n');
+    var lines = u.trimSplit(input, '\n');
     var sum: i64 = 0;
     u.use(&sum, &lines);
-    lines = try u.pad(lines, '.', 10);
+    lines = u.pad(lines, '.', 10);
     const dxs: [8]u64 = @bitCast([8]i64{ 1, 1, 1,  0, -1, -1, -1,  0 });
     const dys: [8]u64 = @bitCast([8]i64{-1, 0, 1,  1,  1,  0, -1, -1 });
     for (lines, 0..) |line, i| {
@@ -44,11 +44,11 @@ const Xd = struct {
 };
 
 pub fn part2() !?i128 {
-    var lines = try u.trimSplit(input, '\n');
+    var lines = u.trimSplit(input, '\n');
     var sum: i64 = 0;
     u.use(&sum, &lines);
-    lines = try u.pad(lines, '.', 10);
-    const xd = try u.map(lines, Xd.init);
+    lines = u.pad(lines, '.', 10);
+    const xd = u.map(lines, Xd.init);
     const dxs: [8]u64 = @bitCast([8]i64{ 1, 1, 1,  0, -1, -1, -1,  0 });
     const dys: [8]u64 = @bitCast([8]i64{-1, 0, 1,  1,  1,  0, -1, -1 });
     var label: u64 = 1;

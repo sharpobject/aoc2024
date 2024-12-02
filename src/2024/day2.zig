@@ -28,12 +28,12 @@ fn isSafe(nums: []const i64) bool {
 }
 
 pub fn part1() !?i128 {
-    var lines = try u.trimSplit(input, '\n');
+    var lines = u.trimSplit(input, '\n');
     var sum: i64 = 0;
     u.use(&sum, &lines);
     for (lines) |line| {
-        const nums_s = try u.trimSplit(line, ' ');
-        const nums = try u.map(nums_s, struct{fn parse(s: []const u8) !i64 {
+        const nums_s = u.trimSplit(line, ' ');
+        const nums = u.map(nums_s, struct{fn parse(s: []const u8) !i64 {
             return try std.fmt.parseInt(i64, s, 10);
         }}.parse);
         for (nums_s, 0..) |num_s, i| {
@@ -48,11 +48,11 @@ pub fn part1() !?i128 {
 }
 
 pub fn part2() !?i128 {
-    var lines = try u.trimSplit(input, '\n');
+    var lines = u.trimSplit(input, '\n');
     var sum: i64 = 0;
     u.use(&sum, &lines);
     for (lines) |line| {
-        const nums_s = try u.trimSplit(line, ' ');
+        const nums_s = u.trimSplit(line, ' ');
         const nums = try gpa.alloc(i64, nums_s.len);
         for (nums_s, 0..) |num_s, i| {
             nums[i] = try std.fmt.parseInt(i64, num_s, 10);

@@ -6,7 +6,7 @@ pub var input: []const u8 = undefined;
 pub var gpa: mem.Allocator = undefined;
 
 pub fn part1() !?i64 {
-    const lines = try u.trimSplit(input, '\n');
+    const lines = u.trimSplit(input, '\n');
     var sum: i64 = 0;
     for (lines) |line| {
         var first_number: i64 = -1;
@@ -25,7 +25,7 @@ pub fn part1() !?i64 {
 const digits: [9][]const u8 = .{"one", "two", "three", "four", "five", "six", "seven", "eight", "nine"};
 
 pub fn part2() !?i64 {
-    const lines = try u.trimSplit(input, '\n');
+    const lines = u.trimSplit(input, '\n');
     var sum: i64 = 0;
     for (lines) |line| {
         var first_number: i64 = -1;
@@ -39,7 +39,7 @@ pub fn part2() !?i64 {
             while (j < digits.len) : (j += 1) {
                 if (i + digits[j].len > line.len) continue;
                 if (mem.eql(u8, digits[j], line[i .. i + digits[j].len])) {
-                    this_number = @intCast(j + 1); 
+                    this_number = @intCast(j + 1);
                 }
             }
             if (this_number == -1) continue;
