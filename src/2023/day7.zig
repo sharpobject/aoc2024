@@ -105,7 +105,6 @@ pub fn part1() !?i128 {
         return std.mem.lessThan(u8, &powerify(a), &powerify(b));
     }}.lessThan);
     for (lines, 1..) |line, i| {
-        std.debug.print("fucker: {s}\n", .{line});
         sum += @as(i64, @intCast(i)) * try std.fmt.parseInt(i64, u.trimSplit(line, ' ')[1], 10);
     }
     return sum;
@@ -124,7 +123,6 @@ pub fn part2() !?i128 {
         return std.mem.lessThan(u8, &powerify2(a), &powerify2(b));
     }}.lessThan);
     for (lines, 1..) |line, i| {
-        std.debug.print("fucker: {s}\n", .{line});
         sum += @as(i64, @intCast(i)) * try std.fmt.parseInt(i64, u.trimSplit(line, ' ')[1], 10);
     }
     return sum;
