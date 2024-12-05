@@ -25,9 +25,6 @@ pub fn part1() !?i128 {
             }
         }
     }
-
-
-
     return sum;
 }
 
@@ -48,6 +45,5 @@ pub fn part2() !?i128 {
             }
         }
     }
-
     return sum;
 }
