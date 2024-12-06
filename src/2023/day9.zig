@@ -5,6 +5,10 @@ pub const u = @import("u.zig");
 pub var input: []const u8 = undefined;
 pub var gpa: mem.Allocator = undefined;
 
+pub fn part12() !struct{?i128, ?i128} {
+    return .{ try part1(), try part2() };
+}
+
 var xd: [1000][1000]i64 = @bitCast([_]i64{0} ** (1000 * 1000));
 
 pub fn part1() !?i128 {

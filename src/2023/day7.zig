@@ -5,6 +5,10 @@ pub const u = @import("u.zig");
 pub var input: []const u8 = undefined;
 pub var gpa: mem.Allocator = undefined;
 
+pub fn part12() !struct{?i128, ?i128} {
+    return .{ try part1(), try part2() };
+}
+
 const HandRank = enum(u8) {
     high_card = 0,
     pair = 1,

@@ -5,6 +5,10 @@ pub const u = @import("u.zig");
 pub var input: []const u8 = undefined;
 pub var gpa: mem.Allocator = undefined;
 
+pub fn part12() !struct{?i128, ?i128} {
+    return .{ try part1(), try part2() };
+}
+
 pub fn part1() !?i128 {
     const lines = u.trimSplit(input, '\n');
     var sum: i64 = 0;

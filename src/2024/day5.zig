@@ -8,6 +8,10 @@ pub var gpa: mem.Allocator = undefined;
 var lts: [10000]i64 = [_]i64{0} ** 10000;
 var gts: [10000]i64 = [_]i64{0} ** 10000;
 
+pub fn part12() !struct{?i128, ?i128} {
+    return .{ try part1(), try part2() };
+}
+
 pub fn part1() !?i128 {
     var lines = u.trimSplit(input, '\n');
     var sum: i64 = 0;

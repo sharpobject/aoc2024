@@ -236,6 +236,17 @@ fn typeResemblesFieldname(T: type) bool {
     return false;
 }
 
+fn getSliceTypec(T: type, c: anytype) type {
+    const f = struct {
+        pub fn f(x: getInnermostElemType(T)) c {
+            _ = x;
+            const ret: c = undefined;
+            return ret;
+        }
+    }.f;
+    return getSliceType(T, f);
+}
+
 pub fn getSliceType(T: type, f: anytype) type {
     const F = @TypeOf(f);
     if (comptime typeResemblesFieldname(F)) {
@@ -280,12 +291,33 @@ pub fn getElemType(T: anytype) type {
     }
 }
 
+pub fn getInnermostElemType(T: anytype) type {
+    if (@TypeOf(T) != type) {
+        return getInnermostElemType(@TypeOf(T));
+    }
+    const info = @typeInfo(T);
+    switch (info) {
+        .pointer => |ptr| return getInnermostElemType(ptr.child),
+        else => return T,
+    }
+}
+
 pub fn field(comptime T: type, comptime fieldname: []const u8) fn(T) @FieldType(T, fieldname) {
     return struct {
         fn f(x: T) @FieldType(T, fieldname) {
             return @field(x, fieldname);
         }
     }.f;
+}
+
+pub inline fn mapc(xs: anytype, c: anytype) getSliceTypec(@TypeOf(xs), @TypeOf(c)) {
+    const f = struct {
+        pub fn f(x: getInnermostElemType(@TypeOf(xs))) @TypeOf(c) {
+            _ = x;
+            return c;
+        }
+    }.f;
+    return map(xs, f);
 }
 
 pub inline fn map(xs: anytype, f: anytype) getSliceType(@TypeOf(xs), if (@typeInfo(@TypeOf(.{ f })).@"struct".fields[0].is_comptime) f else @TypeOf(f)) {
@@ -472,6 +504,12 @@ pub fn use(aa: anytype, b: anytype) void {
     _ = b;
 }
 
+pub fn use3(aa: anytype, b: anytype, c: anytype) void {
+    _ = aa;
+    _ = b;
+    _ = c;
+}
+
 pub fn Queue(T: type) type {
     return struct {
         items: []T = &([_]T{}),
@@ -485,9 +523,9 @@ pub fn Queue(T: type) type {
             const new_items = gpa.alloc(T, new_len) catch @panic("alloc failed");
             const first_segment_hi = @min(self.lo + self.len, old_items.len);
             const first_segment_len = first_segment_hi - self.lo;
-            @memcpy(new_items, old_items[self.lo..first_segment_hi]);
+            @memcpy(new_items[0..first_segment_len], old_items[self.lo..first_segment_hi]);
             if (first_segment_len < self.len) {
-                @memcpy(new_items[first_segment_len..], old_items[0..self.len - first_segment_len]);
+                @memcpy(new_items[first_segment_len..][0..self.len - first_segment_len], old_items[0..self.len - first_segment_len]);
             }
             self.lo = 0;
             self.items = new_items;
@@ -496,17 +534,19 @@ pub fn Queue(T: type) type {
             if (self.len == self.items.len) {
                 self.resize();
             }
-            self.items[self.len] = x;
+            self.items[(self.lo + self.len) % self.items.len] = x;
             self.len += 1;
         }
         pub fn pop(self: *Self) T {
             if (self.len == 0) @panic("pop: empty");
+            const ret = self.items[self.lo];
             self.len -= 1;
-            return self.items[self.len];
+            self.lo = (self.lo + 1) % self.items.len;
+            return ret;
         }
         pub fn peek(self: *Self) T {
             if (self.len == 0) @panic("peek: empty");
-            return self.items[self.len - 1];
+            return self.items[self.lo];
         }
     };
 }

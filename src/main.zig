@@ -19,30 +19,33 @@ pub fn main() !void {
     const input_small2 = @embedFile("input_small2");
     const input = @embedFile("input");
 
-    Problem.input = input_small;
-    if (try Problem.part1()) |solution|
-        try stdout.print(switch (@TypeOf(solution)) {
+    {
+        Problem.input = input_small;
+        const solution = try Problem.part12();
+        try stdout.print(switch (@TypeOf(solution[0])) {
             []const u8 => "{s}",
             else => "{any}",
-        } ++ "\n", .{solution});
-
-    Problem.input = input_small2;
-    if (try Problem.part2()) |solution|
-        try stdout.print(switch (@TypeOf(solution)) {
+        } ++ "\n", .{solution[0]});
+    }
+    {
+        Problem.input = input_small2;
+        const solution = try Problem.part12();
+        try stdout.print(switch (@TypeOf(solution[1])) {
             []const u8 => "{s}",
             else => "{any}",
-        } ++ "\n", .{solution});
-
-    Problem.input = input;
-    if (try Problem.part1()) |solution|
-        try stdout.print(switch (@TypeOf(solution)) {
+        } ++ "\n", .{solution[1]});
+    }
+    {
+        Problem.input = input;
+        const solution = try Problem.part12();
+        //_ = solution;
+        try stdout.print(switch (@TypeOf(solution[0])) {
             []const u8 => "{s}",
             else => "{any}",
-        } ++ "\n", .{solution});
-
-    if (try Problem.part2()) |solution|
-        try stdout.print(switch (@TypeOf(solution)) {
+        } ++ "\n", .{solution[0]});
+        try stdout.print(switch (@TypeOf(solution[1])) {
             []const u8 => "{s}",
             else => "{any}",
-        } ++ "\n", .{solution});
+        } ++ "\n", .{solution[1]});
+    }
 }
