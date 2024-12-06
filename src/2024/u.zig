@@ -60,11 +60,11 @@ pub fn split(s_: []const u8, d: u8) [][]const u8 {
     return list.toOwnedSlice() catch @panic("out of memory");
 }
 
-pub fn trimSplit(s_: []const u8, d: u8) [][]const u8 {
+pub fn trimSplit(s_: anytype, d: u8) []@TypeOf(s_) {
     var s = s_;
     while (s.len > 0 and s[0] == d) s = s[1..];
     while (s.len > 0 and s[s.len - 1] == d) s = s[0..s.len - 1];
-    var list = std.ArrayList([]const u8).init(gpa);
+    var list = std.ArrayList(@TypeOf(s_)).init(gpa);
     defer list.deinit();
     var i: usize = 0;
     var start: usize = 0;
